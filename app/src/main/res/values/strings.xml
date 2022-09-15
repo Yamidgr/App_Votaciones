@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">votaciones</string>
+    <array name="formulario1">
+        <item>Personal</item>
+        <item>Candidato</item>
+    </array>
+</resources>
