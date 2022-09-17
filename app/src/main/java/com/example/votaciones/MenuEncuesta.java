@@ -41,19 +41,6 @@ public class MenuEncuesta extends AppCompatActivity {
         List<Candidatos> candidatos = llenarCandidatos();
         ArrayAdapter<Candidatos> adapter = new ArrayAdapter<>(getApplicationContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, candidatos);
         spCandidatos.setAdapter(adapter);
-        spCandidatos.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                int idCan =((Candidatos) parent.getSelectedItem()).getId();
-                String nameCan =((Candidatos) parent.getSelectedItem()).getName();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
 
         Button btnVotar;
         btnVotar = findViewById(R.id.btnVotar);
@@ -113,7 +100,10 @@ public class MenuEncuesta extends AppCompatActivity {
         }
         return id_persona;
     }
-    public boolean registrarVoto(Spinner candidato){
+    public boolean registrarVoto(Spinner spCandidatos){
+
+        int idcan = ((Candidatos)spCandidatos.getSelectedItem()).getId();
+        Toast.makeText(this, String.valueOf(idcan), Toast.LENGTH_LONG).show();
         return false;
     }
 
