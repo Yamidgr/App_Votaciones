@@ -3,6 +3,7 @@ package com.example.votaciones;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -43,7 +44,9 @@ public class MenuEncuesta extends AppCompatActivity {
         spCandidatos.setAdapter(adapter);
 
         Button btnVotar;
+        Button btnFinalizar;
         btnVotar = findViewById(R.id.btnVotar);
+        btnFinalizar = findViewById(R.id.btnFinalizar);
         btnVotar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,14 +55,30 @@ public class MenuEncuesta extends AppCompatActivity {
                     int idPersona = 99999999;
                     idPersona = registrarPersona(edtNombres, edtApellidos, edtDocumento, edtEdad);
                     if(idPersona != 99999999) {
-                        boolean registroVoto = registrarVoto(spCandidatos);
+                        boolean registroVoto = registrarVoto(idPersona, spCandidatos);
                         if (registroVoto) {
                             Toast.makeText(v.getContext(), "Voto registrado con exito", Toast.LENGTH_LONG).show();
+                            resetForm(edtNombres, edtApellidos, edtDocumento, edtEdad);
                         }
                     }
                 }
             }
         });
+
+        btnFinalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ResultActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void resetForm(EditText edtNombres, EditText edtApellidos, EditText edtDocumento, EditText edtEdad) {
+        edtNombres.setText("");
+        edtApellidos.setText("");
+        edtDocumento.setText("");
+        edtEdad.setText("");
     }
 
     public boolean validaciones(EditText edtNombres, EditText edtApellidos, EditText edtDocumento, EditText edtEdad){
@@ -85,12 +104,11 @@ public class MenuEncuesta extends AppCompatActivity {
     }
 
     public int registrarPersona(EditText edtNombres, EditText edtApellidos, EditText edtDocumento, EditText edtEdad){
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
         int id_persona = 0;
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         if (db != null) {
             // Insert con ContentValues
             ContentValues data = new ContentValues();
-
             data.put("name", edtNombres.getText().toString() + " " + edtApellidos.getText().toString());
             data.put("document", Integer.parseInt(edtDocumento.getText().toString()));
             data.put("age", Integer.parseInt(edtEdad.getText().toString()));
@@ -100,10 +118,18 @@ public class MenuEncuesta extends AppCompatActivity {
         }
         return id_persona;
     }
-    public boolean registrarVoto(Spinner spCandidatos){
+    public boolean registrarVoto(int id_persona, Spinner spCandidatos){
 
         int idcan = ((Candidatos)spCandidatos.getSelectedItem()).getId();
-        Toast.makeText(this, String.valueOf(idcan), Toast.LENGTH_LONG).show();
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if (db != null) {
+            ContentValues data = new ContentValues();
+            data.put("id_candidato", idcan);
+            data.put("id_persona", id_persona);
+            db.insert("tbl_votos", null, data);
+            return true;
+        }
         return false;
     }
 
